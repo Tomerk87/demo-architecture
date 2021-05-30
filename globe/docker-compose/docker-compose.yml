@@ -1,0 +1,16 @@
+# Use root/example as user/password credentials
+version: "3.7"
+services:
+  mysql-server:
+    image: mysql:8.0.19
+    container_name: "mysql"
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: test_project
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+#    volumes:
+#      - mysql-data:/var/lib/mysql
+    ports:
+      - "3306:3306"
