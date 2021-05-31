@@ -28,6 +28,15 @@ public class CacheService {
     public Map saveContinentInCache(ContinentResponse response) throws JsonProcessingException {
         Map responseMap = new HashMap();
 
+        String hashtext = checksum(response);
+
+        responseMap.put(hashtext, response);
+
+        return responseMap;
+    }
+
+
+    private String checksum(ContinentResponse response) throws JsonProcessingException {
         String responseAsString = mapper.writeValueAsString(response);
         MessageDigest md5 = getDigest();
         md5.update(responseAsString.getBytes(StandardCharsets.UTF_8));
@@ -40,10 +49,7 @@ public class CacheService {
         }
 
         md5.reset();
-
-        responseMap.put(hashtext, response);
-
-        return responseMap;
+        return hashtext;
     }
 
     private MessageDigest getDigest() {
