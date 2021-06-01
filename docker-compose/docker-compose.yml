@@ -18,5 +18,6 @@ services:
   redis-server:
     image: redis:6.2.3
     container_name: "redis"
+    restart: always
     ports:
       - "6379:6379"
