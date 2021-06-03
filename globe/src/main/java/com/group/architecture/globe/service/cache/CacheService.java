@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -43,7 +42,7 @@ public class CacheService {
         return etag;
     }
 
-    public ContinentResponse getContinentByEtag(String continentId, String etag) throws NotFoundException {
+    public ContinentResponse getContinentByEtag(long continentId, String etag) throws NotFoundException {
         Boolean containsId = redisTemplate.opsForHash().hasKey(HASH_ID, continentId);
         if (!containsId) {
             throw new NotFoundException(String.format("Continent id %s was not found in cache", continentId));
@@ -58,7 +57,7 @@ public class CacheService {
         return response;
     }
 
-    public void deleteTag(String continentId) {
+    public void deleteTag(long continentId) {
         CacheStoredEntity entity = (CacheStoredEntity) redisTemplate.opsForHash().get(HASH_ID, continentId);
         if (entity == null) {
             log.error(String.format("Couldn't find continent with id %s in cache", continentId));

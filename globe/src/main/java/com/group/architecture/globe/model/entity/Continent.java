@@ -1,11 +1,15 @@
 package com.group.architecture.globe.model.entity;
 
 import com.group.architecture.globe.model.common.BaseEntity;
+import com.group.architecture.globe.model.request.ContinentRequest;
+import com.group.architecture.globe.model.request.CountryRequest;
 import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -19,6 +23,13 @@ public class Continent extends BaseEntity {
     @Column(nullable = false, unique = true)
     private String name;
 
-    @OneToMany(mappedBy = "continent")
-    private Set<Country> countries;
+    @OneToMany(mappedBy = "continent", fetch = FetchType.EAGER)
+    private Set<Country> countries = new HashSet<>();
+
+    public Continent(ContinentRequest request) {
+        this.name = request.getName();
+        for (CountryRequest c : request.getCountries()) {
+            countries.add(new Country(c));
+        }
+    }
 }
