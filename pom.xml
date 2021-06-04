@@ -5,6 +5,7 @@
 
 	<modules>
 		<module>globe</module>
+		<module>gateway</module>
 	</modules>
 
 </project>
