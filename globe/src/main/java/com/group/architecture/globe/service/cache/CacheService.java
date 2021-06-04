@@ -18,10 +18,6 @@ public class CacheService {
     @Autowired
     private ObjectMapper mapper;
 
-    //TODO:CHECK IF NEED TO BE DELETED
-//    @Autowired
-//    private CacheRepository cacheRepository;
-
     @Autowired
     private RedisTemplate redisTemplate;
 

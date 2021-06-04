@@ -28,8 +28,8 @@ public class Country extends BaseEntity {
         this.countryCode = request.getCountryCode();
     }
 
-    @PreRemove
-    private void removeCountryFromContinent() {
-        this.continent.getCountries().remove(this);
-    }
+//    @PreRemove
+//    private void removeCountryFromContinent() {
+//        this.continent.getCountries().remove(this);
+//    }
 }

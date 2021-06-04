@@ -1,6 +1,7 @@
 package com.group.architecture.globe.service;
 
 import com.group.architecture.globe.model.entity.Continent;
+import com.group.architecture.globe.model.entity.Country;
 import com.group.architecture.globe.model.request.ContinentRequest;
 import com.group.architecture.globe.repository.ContinentRepository;
 import javassist.NotFoundException;
@@ -14,6 +15,9 @@ public class ContinentService {
 
     @Autowired
     private ContinentRepository continentRepository;
+
+    @Autowired
+    private CountryService countryService;
 
     public Continent saveContinent(ContinentRequest request) {
         var continent = new Continent(request);
@@ -43,7 +47,11 @@ public class ContinentService {
         return continent;
     }
 
-    public void deleteContinent(long id) {
+    public void deleteContinent(long id) throws NotFoundException {
+        var continent = getContinent(id);
+        for (Country c : continent.getCountries()) {
+            countryService.deleteCountry(c.getId());
+        }
         continentRepository.deleteById(id);
     }
 }

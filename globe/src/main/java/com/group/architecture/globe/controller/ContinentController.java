@@ -60,16 +60,25 @@ public class ContinentController {
     public ContinentResponse getContinentById(@PathVariable long id, HttpServletRequest request, HttpServletResponse response) throws NotFoundException {
         String eTag = request.getHeader(ETAG_HEADER);
         if (!Strings.isNullOrEmpty(eTag)) {
-            addETagHeader(response, eTag);
             try {
-                return cacheService.getContinentByEtag(id, request.getHeader(ETAG_HEADER));
+                var continent = cacheService.getContinentByEtag(id, request.getHeader(ETAG_HEADER));
+                addETagHeader(response, eTag);
+                return continent;
             } catch (Exception e) {
                 log.error(String.format("Failed to collect Continent with Id %s from cache. Going to db. Error: %s", id, e.getMessage()),e);
             }
         }
 
         var continent = continentService.getContinent(id);
-        return new ContinentResponse(continent);
+        var continentResponse = new ContinentResponse(continent);
+        try {
+            eTag = saveResponseToCache(continentResponse);
+            addETagHeader(response,eTag);
+        } catch (Exception e) {
+            log.error(String.format("Failed to save response to cache. Error: %s",e.getMessage()),e);
+        }
+
+        return continentResponse;
     }
 
 
@@ -87,7 +96,7 @@ public class ContinentController {
     }
 
     @DeleteMapping("{id}")
-    public void deleteContinent(@PathVariable long id) {
+    public void deleteContinent(@PathVariable long id) throws NotFoundException {
         continentService.deleteContinent(id);
         cacheService.deleteTag(id);
     }
