@@ -3,7 +3,6 @@ package com.group.architecture.globe.model.entity;
 import com.group.architecture.globe.model.common.BaseEntity;
 import com.group.architecture.globe.model.request.CountryRequest;
 import lombok.*;
-
 import javax.persistence.*;
 
 @Getter
@@ -20,7 +19,7 @@ public class Country extends BaseEntity {
     @Column(nullable = false, unique = true, name = "code")
     private String countryCode;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "continent_id")
     private Continent continent;
 

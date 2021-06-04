@@ -1,12 +1,12 @@
 package com.group.architecture.globe.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Strings;
 import com.group.architecture.globe.model.entity.Continent;
 import com.group.architecture.globe.model.request.ContinentRequest;
 import com.group.architecture.globe.model.response.ContinentResponse;
 import com.group.architecture.globe.service.ContinentService;
 import com.group.architecture.globe.service.cache.CacheService;
-import com.group.architecture.globe.utils.MD5Utils;
 import javassist.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,15 +45,22 @@ public class ContinentController {
 
     @PostMapping("")
     public ContinentResponse saveContinent(@RequestBody ContinentRequest continentRequest, HttpServletResponse response) {
-        Continent continent = continentService.saveContinent(continentRequest);
-        ContinentResponse continentResponse = new ContinentResponse(continent);
-        addResponseEtagHeader(response, continentResponse);
+        var continent = continentService.saveContinent(continentRequest);
+        var continentResponse = new ContinentResponse(continent);
+        try {
+            String eTag = saveResponseToCache(continentResponse);
+            addETagHeader(response,eTag);
+        } catch (Exception e) {
+            log.error(String.format("Failed to save response to cache. Error: %s",e.getMessage()));
+        }
         return continentResponse;
     }
 
     @GetMapping("{id}")
     public ContinentResponse getContinentById(@PathVariable long id, HttpServletRequest request, HttpServletResponse response) throws NotFoundException {
-        if (request.getHeader(ETAG_HEADER) != null) {
+        String eTag = request.getHeader(ETAG_HEADER);
+        if (!Strings.isNullOrEmpty(eTag)) {
+            addETagHeader(response, eTag);
             try {
                 return cacheService.getContinentByEtag(id, request.getHeader(ETAG_HEADER));
             } catch (Exception e) {
@@ -61,19 +68,21 @@ public class ContinentController {
             }
         }
 
-        Continent continent = continentService.getContinent(id);
-        ContinentResponse continentResponse = new ContinentResponse(continent);
-
-        addResponseEtagHeader(response, continentResponse);
-        return continentResponse;
+        var continent = continentService.getContinent(id);
+        return new ContinentResponse(continent);
     }
 
 
     @PutMapping("{id}")
     public ContinentResponse updateContinent(@PathVariable long id, @RequestBody ContinentRequest request, HttpServletResponse response) throws NotFoundException {
-        Continent continent = continentService.updateContinent(id, request);
-        ContinentResponse continentResponse = new ContinentResponse(continent);
-        addResponseEtagHeader(response, continentResponse);
+        var continent = continentService.updateContinent(id, request);
+        var continentResponse = new ContinentResponse(continent);
+        try {
+            String eTag = saveResponseToCache(continentResponse);
+            addETagHeader(response,eTag);
+        } catch (Exception e) {
+            log.error(String.format("Failed to save response to cache. Error: %s",e.getMessage()));
+        }
         return continentResponse;
     }
 
@@ -85,13 +94,11 @@ public class ContinentController {
 
 
 
-    private void addResponseEtagHeader(HttpServletResponse response, ContinentResponse continent) {
-        try {
-            String json = mapper.writeValueAsString(continent);
-            String etag = MD5Utils.digest(json);
-            response.addHeader("eTag",etag);
-        } catch (Exception e) {
-            log.error(String.format("Failed to convert continent to MD5 and add as Header. Error: %s",e.getMessage()),e);
-        }
+    private String saveResponseToCache(ContinentResponse continentResponse) throws Exception {
+        return cacheService.saveContinentInCache(continentResponse);
+    }
+
+    private void addETagHeader(HttpServletResponse response, String etag) {
+        response.addHeader(ETAG_HEADER, etag);
     }
 }

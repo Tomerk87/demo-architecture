@@ -16,16 +16,12 @@ public class ContinentService {
     private ContinentRepository continentRepository;
 
     public Continent saveContinent(ContinentRequest request) {
-
-        var dbContinent = continentRepository.save(new Continent(request));
-
-        return dbContinent;
+        var continent = new Continent(request);
+        return continentRepository.save(continent);
     }
 
     public List<Continent> getAllContinents() {
-        List<Continent> allContinents = continentRepository.findAll();
-
-        return allContinents;
+        return continentRepository.findAll();
     }
 
     public Continent getContinent(long id) throws NotFoundException {

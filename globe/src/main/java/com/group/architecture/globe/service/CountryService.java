@@ -3,7 +3,6 @@ package com.group.architecture.globe.service;
 import com.group.architecture.globe.model.entity.Continent;
 import com.group.architecture.globe.model.entity.Country;
 import com.group.architecture.globe.model.request.CountryRequest;
-import com.group.architecture.globe.model.response.CountryResponse;
 import com.group.architecture.globe.repository.CountryRepository;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
