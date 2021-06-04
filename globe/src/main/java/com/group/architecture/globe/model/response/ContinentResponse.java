@@ -27,7 +27,7 @@ public class ContinentResponse implements Serializable {
     public ContinentResponse(Continent continent) {
         this.id = continent.getId();
         this.name = continent.getName();
-        if (!countries.isEmpty()) {
+        if (!continent.getCountries().isEmpty()) {
             for (Country c : continent.getCountries()) countries.add(new CountryResponse(c));
         }
     }

@@ -1,5 +1,6 @@
 package com.group.architecture.globe.service;
 
+import com.group.architecture.globe.model.entity.Continent;
 import com.group.architecture.globe.model.entity.Country;
 import com.group.architecture.globe.model.request.CountryRequest;
 import com.group.architecture.globe.model.response.CountryResponse;
@@ -13,22 +14,28 @@ import java.util.Optional;
 public class CountryService {
 
     @Autowired
+    private ContinentService continentService;
+
+    @Autowired
     private CountryRepository countryRepository;
 
-    public CountryResponse saveCountryContinent(CountryRequest request) {
-        Country dbCountry = countryRepository.save(new Country(request));
-        return new CountryResponse(dbCountry);
+    public Country saveCountry(CountryRequest request) throws NotFoundException {
+        Continent continent = continentService.getContinent(request.getContinentId());
+        Country country = new Country(request);
+        country.setContinent(continent);
+        countryRepository.save(country);
+        return country;
     }
 
-    public CountryResponse getContinent(long id) throws NotFoundException {
+    public Country getContinent(long id) throws NotFoundException {
         Optional<Country> optionalCountry = countryRepository.findById(id);
         if (optionalCountry.isEmpty()) {
             throw new NotFoundException(String.format("Country with Id %s is not found",id));
         }
-        return new CountryResponse(optionalCountry.get());
+        return optionalCountry.get();
     }
 
-    public CountryResponse updateCountry(long id, CountryRequest request) throws NotFoundException {
+    public Country updateCountry(long id, CountryRequest request) throws NotFoundException {
         Optional<Country> optionalCountry = countryRepository.findById(id);
         if (optionalCountry.isEmpty()) {
             throw new NotFoundException(String.format("Country with Id %s is not found",id));
@@ -36,10 +43,11 @@ public class CountryService {
         Country country = optionalCountry.get();
         country.setCountryCode(request.getCountryCode());
         country.setName(request.getName());
-        return new CountryResponse(country);
+        return country;
     }
 
-    public void deleteCountry(long id) {
-        countryRepository.deleteById(id);
+    public void deleteCountry(long id) throws NotFoundException {
+        var country = getContinent(id);
+        countryRepository.delete(country);
     }
 }

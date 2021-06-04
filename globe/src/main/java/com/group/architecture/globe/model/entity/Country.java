@@ -4,10 +4,7 @@ import com.group.architecture.globe.model.common.BaseEntity;
 import com.group.architecture.globe.model.request.CountryRequest;
 import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 @Getter
 @Setter
@@ -30,5 +27,10 @@ public class Country extends BaseEntity {
     public Country(CountryRequest request) {
         this.name = request.getName();
         this.countryCode = request.getCountryCode();
+    }
+
+    @PreRemove
+    private void removeCountryFromContinent() {
+        this.continent.getCountries().remove(this);
     }
 }

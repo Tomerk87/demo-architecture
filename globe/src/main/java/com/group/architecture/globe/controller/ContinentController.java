@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -34,28 +35,34 @@ public class ContinentController {
 
     @GetMapping("all")
     public List<ContinentResponse> getAllContinents() {
-        return continentService.getAllContinents();
+        List<Continent> allContinents = continentService.getAllContinents();
+        List<ContinentResponse> responses = new ArrayList<>();
+        for (Continent c : allContinents) {
+            responses.add(new ContinentResponse(c));
+        }
+        return responses;
     }
 
     @PostMapping("")
-    public ContinentResponse saveContinent(@RequestBody ContinentRequest continent, HttpServletResponse response) {
-        ContinentResponse continentResponse = continentService.saveContinent(continent);
+    public ContinentResponse saveContinent(@RequestBody ContinentRequest continentRequest, HttpServletResponse response) {
+        Continent continent = continentService.saveContinent(continentRequest);
+        ContinentResponse continentResponse = new ContinentResponse(continent);
         addResponseEtagHeader(response, continentResponse);
         return continentResponse;
     }
 
     @GetMapping("{id}")
     public ContinentResponse getContinentById(@PathVariable long id, HttpServletRequest request, HttpServletResponse response) throws NotFoundException {
-        ContinentResponse continentResponse = null;
         if (request.getHeader(ETAG_HEADER) != null) {
             try {
-                continentResponse = cacheService.getContinentByEtag(id, request.getHeader(ETAG_HEADER));
+                return cacheService.getContinentByEtag(id, request.getHeader(ETAG_HEADER));
             } catch (Exception e) {
                 log.error(String.format("Failed to collect Continent with Id %s from cache. Going to db. Error: %s", id, e.getMessage()),e);
-
-                continentResponse = continentService.getContinent(id);
             }
         }
+
+        Continent continent = continentService.getContinent(id);
+        ContinentResponse continentResponse = new ContinentResponse(continent);
 
         addResponseEtagHeader(response, continentResponse);
         return continentResponse;
@@ -64,7 +71,8 @@ public class ContinentController {
 
     @PutMapping("{id}")
     public ContinentResponse updateContinent(@PathVariable long id, @RequestBody ContinentRequest request, HttpServletResponse response) throws NotFoundException {
-        ContinentResponse continentResponse = continentService.updateContinent(id, request);
+        Continent continent = continentService.updateContinent(id, request);
+        ContinentResponse continentResponse = new ContinentResponse(continent);
         addResponseEtagHeader(response, continentResponse);
         return continentResponse;
     }

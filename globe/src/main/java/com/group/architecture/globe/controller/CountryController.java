@@ -1,5 +1,6 @@
 package com.group.architecture.globe.controller;
 
+import com.group.architecture.globe.exception.InvalidDataException;
 import com.group.architecture.globe.model.entity.Country;
 import com.group.architecture.globe.model.request.CountryRequest;
 import com.group.architecture.globe.model.response.CountryResponse;
@@ -16,22 +17,28 @@ public class CountryController {
     private CountryService countryService;
 
     @PostMapping("")
-    public CountryResponse createCountry(@RequestBody CountryRequest country) {
-        return countryService.saveCountryContinent(country);
+    public CountryResponse createCountry(@RequestBody CountryRequest countryRequest) throws NotFoundException {
+        if (countryRequest.getContinentId() == null) {
+            throw new InvalidDataException("Unable to create country without continent.");
+        }
+        Country country = countryService.saveCountry(countryRequest);
+        return new CountryResponse(country);
     }
 
     @GetMapping("{id}")
     public CountryResponse getCountryById(@PathVariable long id) throws NotFoundException {
-        return countryService.getContinent(id);
+        Country country =  countryService.getContinent(id);
+        return new CountryResponse(country);
     }
 
     @PutMapping("{id}")
     public CountryResponse updateCountry(@PathVariable long id, @RequestBody CountryRequest request) throws NotFoundException {
-        return countryService.updateCountry(id, request);
+        Country country = countryService.updateCountry(id, request);
+        return new CountryResponse(country);
     }
 
     @DeleteMapping("{id}")
-    public void deleteCountry(@PathVariable long id) {
+    public void deleteCountry(@PathVariable long id) throws NotFoundException {
         countryService.deleteCountry(id);
     }
 }
