@@ -24,7 +24,16 @@ This repository is a project with micro-services running using:
 #### On Public Key Retrieval is not allowed error
 * In *Connection Settings* -> _Driver properties_ set value to ***TRUE*** 
 
-### Who do I talk to? ###
+## Services ##
+# *Globe service* #
+* ***Spring Boot*** application.
+* Connected to ***MySql***.
+* Using ***Redis*** as *cache*.
+* Cache eTags supported only on ***Continent CRUD*** operations.
+* Controller end point returns an ***eTag*** header.
+* If Request arrives with the *eTag* header, it will first try to collect from cache before going to MySql.
 
-* Repo owner or admin
-* Other community or team contact
+# *Gateway service* #
+* ***Spring Boot*** application.
+* Sending ***Feign*** Rest APIs to Globe service and return responses.
+* Saving ***eTag*** in memories to be sent as header for the calls.
