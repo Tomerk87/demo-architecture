@@ -15,9 +15,9 @@ import java.util.Map;
 @Service
 public class RestService {
 
-    private Map<Long, String> eTagsMap = new HashMap<>();
+    private final Map<Long, String> eTagsMap = new HashMap<>();
 
-    private static String ETAG_HEADER = "eTag";
+    private static final String ETAG_HEADER = "eTag";
 
     @Autowired
     private GlobeFeignClient globeClient;

@@ -10,8 +10,6 @@ import java.util.Map;
 @FeignClient(value = "Globe", url = "${globe.base.url}")
 public interface GlobeFeignClient {
 
-    //TODO: Check for request mapping in https://github.com/OpenFeign/feign/issues/297
-
     @GetMapping(value = "${globe.continent.url}/all")
     ResponseEntity<List<GlobeContinent>> getAllContinents();
 

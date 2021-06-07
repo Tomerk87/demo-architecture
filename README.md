@@ -42,7 +42,7 @@ Markup : * ***Spring Boot*** application.
   * Gets a positive response and publish a message to a topic.
   * The message contains an ***ID*** and the ***eTag*** for the ID.
 
-## *Something service* ##
+## *Consumer service* ##
 * ***Spring Boot*** application.
 * Connected to ***MongoDb***.
 * Connected to ***Kafka*** message queue as a ***Kafka Consumer***.

@@ -6,6 +6,7 @@
 	<modules>
 		<module>globe</module>
 		<module>gateway</module>
+		<module>consumer</module>
 	</modules>
 
 </project>
