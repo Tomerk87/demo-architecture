@@ -1,11 +1,11 @@
-package com.group.architecture.globe.configuration;
+package com.group.architecture.gateway.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class utils {
+public class GatewayBeanConfig {
 
     @Bean
     public ObjectMapper mapper() {
