@@ -1,12 +1,15 @@
 package com.group.architecture.gateway.service;
 
 import com.group.architecture.gateway.feign.GlobeFeignClient;
-import com.group.architecture.gateway.model.GlobeContinent;
+import com.group.architecture.gateway.model.request.GlobeContinentRequest;
+import com.group.architecture.gateway.model.response.GlobeContinentResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.util.MultiValueMap;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,36 +26,43 @@ public class RestService {
     private GlobeFeignClient globeClient;
 
     @Autowired
-    private KafkaMessageSenderService kafkaService;
+    private KafkaPublisherService kafkaService;
 
-    public List<GlobeContinent> getAllContinents() {
+
+    //TODO: DELETE
+    public String sendContinent() {
+        kafkaService.publish("123456","YoYo");
+        return "Success!!!!";
+    }
+
+    public List<GlobeContinentResponse> getAllContinents() {
         var response = globeClient.getAllContinents();
         return response.getBody();
     }
 
-    public GlobeContinent createContinent(GlobeContinent continent) {
+    public GlobeContinentResponse createContinent(GlobeContinentRequest continent) {
         var response = globeClient.createContinent(continent);
         var result = response.getBody();
-        manageContinentResponsea(result.getId(), response.getHeaders());
+        manageContinentResponse(result.getId(), response.getHeaders());
         return result;
     }
 
-    public GlobeContinent getContinentById(long continentId) {
+    public GlobeContinentResponse getContinentById(long continentId) {
         String etag = eTagsMap.getOrDefault(continentId, null);
         Map<String, String> headers = new HashMap<>();
         headers.put(ETAG_HEADER, etag);
         var response = globeClient.getContinentById(continentId, headers);
-        manageContinentResponsea(continentId, response.getHeaders());
+        manageContinentResponse(continentId, response.getHeaders());
         return response.getBody();
     }
 
-    public GlobeContinent updateContinent(long continentId, GlobeContinent continent) {
+    public GlobeContinentResponse updateContinent(long continentId, GlobeContinentRequest continent) {
         String etag = eTagsMap.getOrDefault(continentId, null);
         Map<String, String> headers = new HashMap<>();
         headers.put(ETAG_HEADER, etag);
         var response = globeClient.updateContinentById(continentId,continent, headers);
         var result = response.getBody();
-        manageContinentResponsea(result.getId(), response.getHeaders());
+        manageContinentResponse(result.getId(), response.getHeaders());
         return result;
     }
 
@@ -65,13 +75,13 @@ public class RestService {
 
 
 
-    private void manageContinentResponsea(long continentId, HttpHeaders headers) {
+    private void manageContinentResponse(long continentId, HttpHeaders headers) {
         if (!headers.containsKey(ETAG_HEADER) || headers.get(ETAG_HEADER) == null || headers.get(ETAG_HEADER).isEmpty()) {
             return;
         }
         String etag = headers.get(ETAG_HEADER).get(0);
         eTagsMap.put(continentId, etag);
 
-        kafkaService.sendMessage(String.valueOf(continentId),etag);
+        kafkaService.publish(String.valueOf(continentId),etag);
     }
 }

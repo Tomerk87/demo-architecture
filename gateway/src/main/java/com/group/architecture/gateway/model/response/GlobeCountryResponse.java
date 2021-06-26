@@ -1,4 +1,4 @@
-package com.group.architecture.gateway.model;
+package com.group.architecture.gateway.model.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class GlobeCountry {
+public class GlobeCountryResponse {
 
     private Long id;
 

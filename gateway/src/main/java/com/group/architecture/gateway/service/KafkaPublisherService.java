@@ -3,7 +3,6 @@ package com.group.architecture.gateway.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -19,7 +18,10 @@ import java.util.Map;
 @Slf4j
 @EnableAsync
 @Service
-public class KafkaMessageSenderService {
+public class KafkaPublisherService {
+
+    @Value(value = "${spring.kafka.topic.name}")
+    private String topicName;
 
     @Autowired
     private KafkaTemplate<String,String> kafkaTemplate;
@@ -27,34 +29,32 @@ public class KafkaMessageSenderService {
     @Autowired
     private ObjectMapper mapper;
 
-    @Value(value = "${kafka.topic.name}")
-    private String topicName;
-
 
     @Async
-    public void sendMessage(String continentId, String eTag) {
+    public void publish(String continentId, String eTag) {
         Map<String, String> msgAsMap = new HashMap<>();
         try {
+            msgAsMap.put(continentId, eTag);
            var  message = mapper.writeValueAsString(msgAsMap);
-           send(message);
+           publish(message);
         } catch (JsonProcessingException e) {
             log.error(String.format("Failed to convert map of id %s and eTag %s to String. Error: %s", continentId, eTag, e.getMessage()),e);
         }
     }
 
-    private void send(String message) {
-        ListenableFuture<SendResult<String, String>> future =
-                kafkaTemplate.send(topicName, message);
+    public void publish(String message) {
+        log.info("CHECKING");
+        ListenableFuture<SendResult<String, String>> future = kafkaTemplate.send(topicName, message);
 
         future.addCallback(new ListenableFutureCallback<SendResult<String, String>>() {
+            @Override
+            public void onFailure(Throwable throwable) {
+                log.error(String.format("Unable to send message: %s", throwable.getMessage()), throwable);
+            }
 
             @Override
             public void onSuccess(SendResult<String, String> result) {
-                log.info(String.format("Sent message=[%s] with offset=[%s]", message, result.getRecordMetadata().offset()));
-            }
-            @Override
-            public void onFailure(@NotNull Throwable ex) {
-                log.error(String.format("Unable to send message=[%s] due to : %s", message, ex.getMessage()),ex);
+                log.info(String.format("Message was sent: %s", result.getRecordMetadata().offset()));
             }
         });
     }

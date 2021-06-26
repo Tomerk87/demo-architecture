@@ -1,0 +1,21 @@
+server:
+  port: 6060
+
+globe:
+  base:
+    url: http://localhost:4040/globe/api/
+
+  continent:
+    url: continent/
+
+spring:
+  kafka:
+    topic:
+      name: globe
+
+    consumer:
+      bootstrap-servers: localhost:9092
+      group-id: group-id
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer

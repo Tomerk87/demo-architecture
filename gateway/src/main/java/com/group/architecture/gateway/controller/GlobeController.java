@@ -1,6 +1,7 @@
 package com.group.architecture.gateway.controller;
 
-import com.group.architecture.gateway.model.GlobeContinent;
+import com.group.architecture.gateway.model.request.GlobeContinentRequest;
+import com.group.architecture.gateway.model.response.GlobeContinentResponse;
 import com.group.architecture.gateway.service.GlobeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,23 +16,29 @@ public class GlobeController {
     @Autowired
     private GlobeService globeService;
 
+    //TODO: Delete
+    @GetMapping("send")
+    public String send() {
+        return globeService.send();
+    }
+
     @GetMapping("continent/all")
-    public List<GlobeContinent> getAllContinents() {
+    public List<GlobeContinentResponse> getAllContinents() {
         return globeService.getAllContinents();
     }
 
     @PostMapping("continent/")
-    public GlobeContinent createContinent(@RequestBody GlobeContinent continent) {
+    public GlobeContinentResponse createContinent(@RequestBody GlobeContinentRequest continent) {
         return globeService.createContinent(continent);
     }
 
     @GetMapping("continent/{id}")
-    public GlobeContinent getContinentById(@PathVariable long id) {
+    public GlobeContinentResponse getContinentById(@PathVariable long id) {
         return globeService.getContinentById(id);
     }
 
     @PutMapping("continent/{id}")
-    public GlobeContinent updateContinent(@PathVariable long id, @RequestBody GlobeContinent continent) {
+    public GlobeContinentResponse updateContinent(@PathVariable long id, @RequestBody GlobeContinentResponse continent) {
         return globeService.getContinentById(id);
     }
 

@@ -1,4 +1,4 @@
-package com.group.architecture.gateway.model;
+package com.group.architecture.gateway.model.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,11 +11,9 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Setter
-public class GlobeContinent {
-
-    private Long id;
+public class GlobeContinentRequest {
 
     private String name;
 
-    private List<GlobeCountry> countries = new ArrayList<>();
+    private List<GlobeCountryRequest> countries = new ArrayList<>();
 }
