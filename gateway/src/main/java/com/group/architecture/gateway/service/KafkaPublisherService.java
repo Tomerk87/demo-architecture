@@ -2,6 +2,7 @@ package com.group.architecture.gateway.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.group.architecture.gateway.model.KafkaMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,10 +33,9 @@ public class KafkaPublisherService {
 
     @Async
     public void publish(String continentId, String eTag) {
-        Map<String, String> msgAsMap = new HashMap<>();
+        KafkaMessage kafkaMessage = new KafkaMessage(continentId, eTag);
         try {
-            msgAsMap.put(continentId, eTag);
-           var  message = mapper.writeValueAsString(msgAsMap);
+           var  message = mapper.writeValueAsString(kafkaMessage);
            publish(message);
         } catch (JsonProcessingException e) {
             log.error(String.format("Failed to convert map of id %s and eTag %s to String. Error: %s", continentId, eTag, e.getMessage()),e);

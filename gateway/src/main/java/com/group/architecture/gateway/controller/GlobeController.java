@@ -16,11 +16,6 @@ public class GlobeController {
     @Autowired
     private GlobeService globeService;
 
-    //TODO: Delete
-    @GetMapping("send")
-    public String send() {
-        return globeService.send();
-    }
 
     @GetMapping("continent/all")
     public List<GlobeContinentResponse> getAllContinents() {

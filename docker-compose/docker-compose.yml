@@ -46,12 +46,14 @@ services:
   zookeeper:
     image: wurstmeister/zookeeper
     container_name: "zookeeper"
+    restart: always
     ports:
       - "2181:2181"
 
   kafka-server:
     image: "wurstmeister/kafka"
     container_name: "kafka"
+    restart: always
     ports:
       - "9092:9092"
 #    hostname: kafka

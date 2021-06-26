@@ -1,4 +1,4 @@
-package com.group.architecture.gateway.model.response;
+package com.group.architecture.consumer.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -14,11 +14,14 @@ public class CountryResponse {
 
     private String name;
 
-    private String countryCode;
+    private String code2;
+
+    private String code3;
 
     public CountryResponse(Country country) {
         this.id = country.getId();
         this.name = country.getName();
-        this.countryCode = country.getCountryCode();
+        this.code2 = country.getCountryCode2();
+        this.code3 = country.getCountryCode3();
     }
 }

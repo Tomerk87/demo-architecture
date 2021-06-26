@@ -13,5 +13,9 @@ public class GlobeCountryRequest {
 
     private String name;
 
-    private String countryCode;
+    private String code2;
+
+    private String code3;
+
+    private Long continentId;
 }

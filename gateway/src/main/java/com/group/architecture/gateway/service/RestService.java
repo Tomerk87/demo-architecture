@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.util.MultiValueMap;
 
 import java.util.HashMap;
 import java.util.List;
@@ -23,25 +22,19 @@ public class RestService {
     private static final String ETAG_HEADER = "eTag";
 
     @Autowired
-    private GlobeFeignClient globeClient;
+    private GlobeFeignClient feignClient;
 
     @Autowired
     private KafkaPublisherService kafkaService;
-
-
-    //TODO: DELETE
-    public String sendContinent() {
-        kafkaService.publish("123456","YoYo");
-        return "Success!!!!";
-    }
+    
 
     public List<GlobeContinentResponse> getAllContinents() {
-        var response = globeClient.getAllContinents();
+        var response = feignClient.getAllContinents();
         return response.getBody();
     }
 
     public GlobeContinentResponse createContinent(GlobeContinentRequest continent) {
-        var response = globeClient.createContinent(continent);
+        var response = feignClient.createContinent(continent);
         var result = response.getBody();
         manageContinentResponse(result.getId(), response.getHeaders());
         return result;
@@ -51,7 +44,7 @@ public class RestService {
         String etag = eTagsMap.getOrDefault(continentId, null);
         Map<String, String> headers = new HashMap<>();
         headers.put(ETAG_HEADER, etag);
-        var response = globeClient.getContinentById(continentId, headers);
+        var response = feignClient.getContinentById(continentId, headers);
         manageContinentResponse(continentId, response.getHeaders());
         return response.getBody();
     }
@@ -60,14 +53,14 @@ public class RestService {
         String etag = eTagsMap.getOrDefault(continentId, null);
         Map<String, String> headers = new HashMap<>();
         headers.put(ETAG_HEADER, etag);
-        var response = globeClient.updateContinentById(continentId,continent, headers);
+        var response = feignClient.updateContinentById(continentId,continent, headers);
         var result = response.getBody();
         manageContinentResponse(result.getId(), response.getHeaders());
         return result;
     }
 
     public void deleteContinent(long continentId) {
-        var response = globeClient.deleteContinentById(continentId);
+        var response = feignClient.deleteContinentById(continentId);
         if (response.getStatusCode() == HttpStatus.OK) {
             eTagsMap.remove(continentId);
         }

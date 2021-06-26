@@ -40,7 +40,7 @@ public class CountryService {
             throw new NotFoundException(String.format("Country with Id %s is not found",id));
         }
         Country country = optionalCountry.get();
-        country.setCountryCode(request.getCountryCode());
+        country.setCountryCode2(request.getCode2());
         country.setName(request.getName());
         return country;
     }

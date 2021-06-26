@@ -13,10 +13,6 @@ public class GlobeService {
     @Autowired
     private RestService restService;
 
-    //TODO: DELETE
-    public String send() {
-        return restService.sendContinent();
-    }
 
     public List<GlobeContinentResponse> getAllContinents() {
         var continents = restService.getAllContinents();
