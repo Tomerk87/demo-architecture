@@ -17,6 +17,7 @@ import java.util.List;
 public class ConsumerService {
 
     private static final String ETAG_HEADER = "eTag";
+    private static final String IS_CACHED = "cached";
 
     @Value("${globe.base.url}")
     private String globeUrl;
@@ -40,7 +41,12 @@ public class ConsumerService {
         }
 
         log.info(String.format("Arrived Continent object with ID: %s", message.getContinentId()));
-        HttpHeaders resultHeaders = result.getHeaders();
+        checkHeaderResponse(message, result.getHeaders());
+
+        GlobeContinentResponse body = result.getBody();
+    }
+
+    private void checkHeaderResponse(KafkaMessage message, HttpHeaders resultHeaders) {
         if (!resultHeaders.containsKey(ETAG_HEADER)) {
             log.info("Results arrived without eTag header");
         } else {
@@ -48,6 +54,9 @@ public class ConsumerService {
             log.info(String.format("Results arrived with eTag header: %s", strings.get(0)));
             log.info(String.format("Is Same Header: %s", strings.get(0).equals(message.getETag())));
         }
-        GlobeContinentResponse body = result.getBody();
+
+        if (resultHeaders.containsKey(IS_CACHED)) {
+            log.info(String.format("Results from cache: %s", resultHeaders.get(IS_CACHED)));
+        }
     }
 }

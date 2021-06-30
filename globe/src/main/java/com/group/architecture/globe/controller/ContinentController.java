@@ -31,6 +31,7 @@ public class ContinentController {
     private ObjectMapper mapper;
 
     private static final String ETAG_HEADER = "eTag";
+    private static final String IS_CACHED = "cached";
 
 
     @GetMapping("all")
@@ -49,7 +50,7 @@ public class ContinentController {
         var continentResponse = new ContinentResponse(continent);
         try {
             String eTag = saveResponseToCache(continentResponse);
-            addETagHeader(response,eTag);
+            handleHeaders(response,eTag,false);
         } catch (Exception e) {
             log.error(String.format("Failed to save response to cache. Error: %s",e.getMessage()));
         }
@@ -62,7 +63,7 @@ public class ContinentController {
         if (!Strings.isNullOrEmpty(eTag)) {
             try {
                 var continent = cacheService.getContinentByEtag(id, request.getHeader(ETAG_HEADER));
-                addETagHeader(response, eTag);
+                handleHeaders(response, eTag,true);
                 return continent;
             } catch (Exception e) {
                 log.error(String.format("Failed to collect Continent with Id %s from cache. Going to db. Error: %s", id, e.getMessage()),e);
@@ -73,7 +74,7 @@ public class ContinentController {
         var continentResponse = new ContinentResponse(continent);
         try {
             eTag = saveResponseToCache(continentResponse);
-            addETagHeader(response,eTag);
+            handleHeaders(response,eTag,false);
         } catch (Exception e) {
             log.error(String.format("Failed to save response to cache. Error: %s",e.getMessage()),e);
         }
@@ -88,7 +89,7 @@ public class ContinentController {
         var continentResponse = new ContinentResponse(continent);
         try {
             String eTag = saveResponseToCache(continentResponse);
-            addETagHeader(response,eTag);
+            handleHeaders(response,eTag,false);
         } catch (Exception e) {
             log.error(String.format("Failed to save response to cache. Error: %s",e.getMessage()));
         }
@@ -107,7 +108,8 @@ public class ContinentController {
         return cacheService.saveContinentInCache(continentResponse);
     }
 
-    private void addETagHeader(HttpServletResponse response, String etag) {
-        response.addHeader(ETAG_HEADER, etag);
+    private void handleHeaders(HttpServletResponse response, String eTag, boolean isCached) {
+        response.addHeader(ETAG_HEADER, eTag);
+        response.addHeader(IS_CACHED, String.valueOf(isCached));
     }
 }

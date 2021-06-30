@@ -26,7 +26,7 @@ public class RestService {
 
     @Autowired
     private KafkaPublisherService kafkaService;
-    
+
 
     public List<GlobeContinentResponse> getAllContinents() {
         var response = feignClient.getAllContinents();

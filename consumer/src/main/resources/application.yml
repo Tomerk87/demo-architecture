@@ -19,3 +19,19 @@ spring:
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+
+  data:
+    mongodb:
+      uri: jdbc:mongodb://localhost:27017/globe # Mongo database URI. When set, host and port are ignored.
+
+      username: globeAdmin # Login user of the mongo server.
+      password: root1234 # Login password of the mongo server.
+#      repositories:
+#        enabled: true # Enable Mongo repositories.
+#      host: localhost # Mongo server host.
+#      port: 27017 # Mongo server port.
+#      database: test # Database name.
+#      authentication-database: # Authentication database name.
+#      field-naming-strategy: # Fully qualified name of the FieldNamingStrategy to use.
+#      grid-fs-database: # GridFS database name.

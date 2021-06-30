@@ -25,13 +25,15 @@ services:
   mongo-server:
     image: mongo
     container_name: "mongo"
+    hostname: mongodb
     restart: always
-    command: --serviceExecutor adaptive
-#    ports:
-#      - 8081:8081
+#    command: --serviceExecutor adaptive
     environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: root
-      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+      MONGO_INITDB_ROOT_USERNAME: globeAdmin
+      MONGO_INITDB_ROOT_PASSWORD: root1234
+      MONGO_INITDB_DATABASE: globe
+    ports:
+      - 27017:27017
 
   mongo-express:
     image: mongo-express
